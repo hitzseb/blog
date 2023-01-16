@@ -1,6 +1,7 @@
 package hitzseb.blog.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,7 @@ public class PostController {
 	}
 	
 	@GetMapping("/new-post")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public String showNewPost(Model model) {
 		Post post = new Post();
 		model.addAttribute("post", post);
@@ -31,12 +33,14 @@ public class PostController {
 	}
 	
 	@PostMapping("/new-post")
+	@PreAuthorize("hasAuthority('ADMIN')")
     public String newPost(@ModelAttribute Post post) {
 		postService.savePost(post);
 		return "redirect:/posts";
     }
 	
 	@GetMapping("/edit-post/{id}")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public String showEditPost(@PathVariable Long id, Model model) {
 		Post post = postService.getPostById(id);
 		model.addAttribute("post", post);
@@ -44,6 +48,7 @@ public class PostController {
 	}
 	
 	@PostMapping("/edit-post/{id}")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public String udpadtePost(@PathVariable Long id, Post post) {
 		Post existingPost = postService.getPostById(id);
 		existingPost.setTitle(post.getTitle());
@@ -53,6 +58,7 @@ public class PostController {
 	}
 	
 	@GetMapping("/delete-post/{id}")
+	@PreAuthorize("hasAuthority('ADMIN')")
     public String deletePost(@PathVariable Long id) {
 		postService.deletePostById(id);
 		return "redirect:/posts";

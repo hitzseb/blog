@@ -2,27 +2,27 @@ package hitzseb.blog.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class WebSecurityConfig {
 	
 	@Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		
-		http
-			.httpBasic().and().cors().and().csrf().disable()
-			.authorizeHttpRequests(authorize -> authorize
-			.requestMatchers("/", "/posts", "/register", "/login").permitAll()
-			.anyRequest().authenticated()
-			)
-			.formLogin()
-      		.loginPage("/login");
-		
-		return http.build();
+		return http.csrf().disable()
+                .authorizeHttpRequests()
+                .requestMatchers("/", "/register", "/login").permitAll()
+                .requestMatchers("/new-post", "/edit-post/*", "/delete-post/*").hasAuthority("ADMIN")
+                .and()
+                .authorizeHttpRequests().requestMatchers("/posts/**")
+                .authenticated().and().formLogin().loginPage("/login")
+                .and().build();
 		
 	}
 	
